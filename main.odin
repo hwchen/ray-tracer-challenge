@@ -8,11 +8,11 @@ expect:: testing.expect
 
 Tuple :: [4]f32
 
-point :: proc(x: f32, y: f32, z: f32) -> [4]f32 {
+point :: proc(x: f32, y: f32, z: f32) -> Tuple {
     return {x, y, z, 1}
 }
 
-vector :: proc(x: f32, y: f32, z: f32) -> [4]f32 {
+vector :: proc(x: f32, y: f32, z: f32) -> Tuple {
     return {x, y, z, 0}
 }
 
@@ -30,8 +30,32 @@ expect_tuples_eq :: proc(t: ^testing.T, found: Tuple, expected: Tuple, loc := #c
     return true
 }
 
+// Grouped because this is basic, sanity-check types of tests
 @test
-test_tuples :: proc(t: ^testing.T) {
+test_tuples_basic_operations:: proc(t: ^testing.T) {
+    // Basic point and vector construction
     expect_tuples_eq(t, point(4, -4, 3), Tuple{4, -4, 3, 1})
     expect_tuples_eq(t, vector(4, -4, 3), Tuple{4, -4, 3, 0})
+
+    // Basic tuple addition
+    expect_tuples_eq(t, {3, -2, 5, 1} + {-2, 3, 1, 0}, {1, 1, 6, 1})
+
+    // Subtracting two points =  vector!
+    expect_tuples_eq(t, point(3, 2, 1) - point(5, 6, 7), vector(-2, -4, -6))
+
+    // Subtracting vector from a point =  point!
+    expect_tuples_eq(t, point(3, 2, 1) - vector(5, 6, 7), point(-2, -4, -6))
+
+    // Subtracting vector from vector = vector!
+    expect_tuples_eq(t, vector(3, 2, 1) - vector(5, 6, 7), vector(-2, -4, -6))
+
+    // Negating a tuple
+    expect_tuples_eq(t, -1 * {1, -2, 3, -4}, {-1, 2, -3, 4})
+
+    // Scalar multiplication
+    expect_tuples_eq(t, 3.5 * {1, -2, 3, -4}, {3.5, -7, 10.5, -14})
+    expect_tuples_eq(t, 0.5 * {1, -2, 3, -4}, {0.5, -1, 1.5, -2})
+
+    // Scalar division
+    expect_tuples_eq(t, {1, -2, 3, -4} / 2, {0.5, -1, 1.5, -2})
 }
