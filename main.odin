@@ -8,10 +8,16 @@ expect :: testing.expect
 
 Tuple :: [4]f32
 
+// A point is a coordinate in three-dimensional space.
+// It's represented as a tuple w/ last entry as 1, useful
+// for various calculations.
 point :: proc(x: f32, y: f32, z: f32) -> Tuple {
     return {x, y, z, 1}
 }
 
+// A vector is a direction and magnitude in three-dimensional space.
+// It's represented as a tuple w/ last entry as 0, useful
+// for various calculations.
 vector :: proc(x: f32, y: f32, z: f32) -> Tuple {
     return {x, y, z, 0}
 }
@@ -20,13 +26,13 @@ magnitude :: proc(v: Tuple) -> f32 {
     return math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3])
 }
 
-/// Given a vector, return a unit vector w/ the same direction
+// Given a vector, return a unit vector w/ the same direction
 normalize :: proc(v: Tuple) -> Tuple {
     return v / magnitude(v)
 }
 
-/// Note that a scalar will be spread onto a tuple, so this works the same for
-/// scalars as well as tuples
+// Note that a scalar will be spread onto a tuple, so this works the same for
+// scalars as well as tuples
 expect_tuples_eq :: proc(
     t: ^testing.T,
     found: Tuple,
