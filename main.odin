@@ -8,7 +8,7 @@ expect :: testing.expect
 
 Tuple :: [4]f32
 
-// A point is a coordinate in three-dimensional space.
+// A point is a coordinate/point in three-dimensional space.
 // It's represented as a tuple w/ last entry as 1, useful
 // for various calculations.
 point :: proc(x: f32, y: f32, z: f32) -> Tuple {
@@ -22,6 +22,8 @@ vector :: proc(x: f32, y: f32, z: f32) -> Tuple {
     return {x, y, z, 0}
 }
 
+// Returns the magnitude of a vector. Will return incorrect results if
+// passed a point
 magnitude :: proc(v: Tuple) -> f32 {
     return math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3])
 }
@@ -29,6 +31,11 @@ magnitude :: proc(v: Tuple) -> f32 {
 // Given a vector, return a unit vector w/ the same direction
 normalize :: proc(v: Tuple) -> Tuple {
     return v / magnitude(v)
+}
+
+// dot product of two vectors
+dot :: proc(v1: Tuple, v2: Tuple) -> f32 {
+    return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2] + v1[3] * v2[3]
 }
 
 // Note that a scalar will be spread onto a tuple, so this works the same for
@@ -96,4 +103,9 @@ test_vector_normalize :: proc(t: ^testing.T) {
     expect_tuples_eq(t, normalize(vector(4, 0, 0)), vector(1, 0, 0))
     expect_tuples_eq(t, normalize(vector(1, 2, 3)), vector(0.26726, 0.53452, 0.80178))
     expect_tuples_eq(t, magnitude(normalize(vector(1, 2, 3))), 1)
+}
+
+@(test)
+test_vector_dot_product :: proc(t: ^testing.T) {
+    expect_tuples_eq(t, dot(vector(1, 2, 3), vector(2, 3, 4)), 20)
 }
