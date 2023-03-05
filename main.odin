@@ -50,6 +50,13 @@ cross :: proc(v1: Tuple, v2: Tuple) -> Tuple {
     )
 }
 
+// A color represented by red, green, blue values.
+// Represented as a 4-tuple to use the same underlying tuple
+// repr as vector and point, but perhaps should use [3]f32
+color :: proc(r: f32, g: f32, b: f32) -> Tuple {
+    return {r, g, b, 0}
+}
+
 // Note that a scalar will be spread onto a tuple, so this works the same for
 // scalars as well as tuples
 expect_tuples_eq :: proc(
@@ -126,4 +133,13 @@ test_vector_dot_product :: proc(t: ^testing.T) {
 test_vector_cross_product :: proc(t: ^testing.T) {
     expect_tuples_eq(t, cross(vector(1, 2, 3), vector(2, 3, 4)), vector(-1, 2, -1))
     expect_tuples_eq(t, cross(vector(2, 3, 4), vector(1, 2, 3)), vector(1, -2, 1))
+}
+
+@(test)
+test_color_basics :: proc(t: ^testing.T) {
+    expect_tuples_eq(t, color(0.9, 0.6, 0.75) + color(0.7, 0.1, 0.25), color(1.6, 0.7, 1.0))
+    expect_tuples_eq(t, color(0.9, 0.6, 0.75) - color(0.7, 0.1, 0.25), color(0.2, 0.5, 0.5))
+    expect_tuples_eq(t, 2 * color(0.2, 0.3, 0.4), color(0.4, 0.6, 0.8))
+    // Hadamard product
+    expect_tuples_eq(t, color(1, 0.2, 0.4) * color(0.9, 1, 0.1), color(0.9, 0.2, 0.04))
 }
