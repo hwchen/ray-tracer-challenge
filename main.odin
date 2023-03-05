@@ -16,6 +16,17 @@ vector :: proc(x: f32, y: f32, z: f32) -> Tuple {
     return {x, y, z, 0}
 }
 
+magnitude :: proc(v: Tuple) -> f32 {
+    return math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3])
+}
+
+/// Given a vector, return a unit vector w/ the same direction
+normalize :: proc(v: Tuple) -> Tuple {
+    return v / magnitude(v)
+}
+
+/// Note that a scalar will be spread onto a tuple, so this works the same for
+/// scalars as well as tuples
 expect_tuples_eq :: proc(
     t: ^testing.T,
     found: Tuple,
@@ -65,10 +76,6 @@ test_tuples_basic_operations :: proc(t: ^testing.T) {
     expect_tuples_eq(t, {1, -2, 3, -4} / 2, {0.5, -1, 1.5, -2})
 }
 
-magnitude :: proc(v: Tuple) -> f32 {
-    return math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3])
-}
-
 @(test)
 test_vector_magnitude :: proc(t: ^testing.T) {
     expect_tuples_eq(t, magnitude(vector(1, 0, 0)), 1)
@@ -76,4 +83,11 @@ test_vector_magnitude :: proc(t: ^testing.T) {
     expect_tuples_eq(t, magnitude(vector(0, 0, 1)), 1)
     expect_tuples_eq(t, magnitude(vector(1, 2, 3)), math.sqrt_f32(14))
     expect_tuples_eq(t, magnitude(vector(-1, -2, -3)), math.sqrt_f32(14))
+}
+
+@(test)
+test_vector_normalize :: proc(t: ^testing.T) {
+    expect_tuples_eq(t, normalize(vector(4, 0, 0)), vector(1, 0, 0))
+    expect_tuples_eq(t, normalize(vector(1, 2, 3)), vector(0.26726, 0.53452, 0.80178))
+    expect_tuples_eq(t, magnitude(normalize(vector(1, 2, 3))), 1)
 }
