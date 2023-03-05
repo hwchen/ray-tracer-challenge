@@ -64,3 +64,16 @@ test_tuples_basic_operations :: proc(t: ^testing.T) {
     // Scalar division
     expect_tuples_eq(t, {1, -2, 3, -4} / 2, {0.5, -1, 1.5, -2})
 }
+
+magnitude :: proc(v: Tuple) -> f32 {
+    return math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2] + v[3] * v[3])
+}
+
+@(test)
+test_vector_magnitude :: proc(t: ^testing.T) {
+    expect_tuples_eq(t, magnitude(vector(1, 0, 0)), 1)
+    expect_tuples_eq(t, magnitude(vector(0, 1, 0)), 1)
+    expect_tuples_eq(t, magnitude(vector(0, 0, 1)), 1)
+    expect_tuples_eq(t, magnitude(vector(1, 2, 3)), math.sqrt_f32(14))
+    expect_tuples_eq(t, magnitude(vector(-1, -2, -3)), math.sqrt_f32(14))
+}
