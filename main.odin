@@ -38,6 +38,18 @@ dot :: proc(v1: Tuple, v2: Tuple) -> f32 {
     return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2] + v1[3] * v2[3]
 }
 
+// cross product of two vectors
+cross :: proc(v1: Tuple, v2: Tuple) -> Tuple {
+    return(
+        {
+            v1[1] * v2[2] - v1[2] * v2[1],
+            v1[2] * v2[0] - v1[0] * v2[2],
+            v1[0] * v2[1] - v1[1] * v2[0],
+            0,
+        }
+    )
+}
+
 // Note that a scalar will be spread onto a tuple, so this works the same for
 // scalars as well as tuples
 expect_tuples_eq :: proc(
@@ -108,4 +120,10 @@ test_vector_normalize :: proc(t: ^testing.T) {
 @(test)
 test_vector_dot_product :: proc(t: ^testing.T) {
     expect_tuples_eq(t, dot(vector(1, 2, 3), vector(2, 3, 4)), 20)
+}
+
+@(test)
+test_vector_cross_product :: proc(t: ^testing.T) {
+    expect_tuples_eq(t, cross(vector(1, 2, 3), vector(2, 3, 4)), vector(-1, 2, -1))
+    expect_tuples_eq(t, cross(vector(2, 3, 4), vector(1, 2, 3)), vector(1, -2, 1))
 }
