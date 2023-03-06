@@ -1,5 +1,6 @@
 package ray_tracer
 
+import "core:fmt"
 import "core:testing"
 
 Canvas :: struct {
@@ -24,6 +25,12 @@ pixel_at :: proc(c: Canvas, x: u32, y: u32) -> Tuple {
     return c.pixels[c.width * y + x]
 }
 
+canvas_to_ppm :: proc(c: Canvas) -> string {
+    header := fmt.aprintf("P3\n%d %d\n255\n", c.width, c.height)
+
+    return header
+}
+
 @(test)
 test_canvas_creation :: proc(t: ^testing.T) {
     c := canvas_init(10, 20)
@@ -43,4 +50,15 @@ test_write_pixel :: proc(t: ^testing.T) {
 
     write_pixel(c, 2, 3, red)
     expect_tuples_eq(t, pixel_at(c, 2, 3), red)
+}
+
+@(test)
+test_ppm_header :: proc(t: ^testing.T) {
+    c := canvas_init(5, 3)
+    defer canvas_destroy(c)
+
+    ppm := canvas_to_ppm(c)
+    defer delete(ppm)
+
+    testing.expect_value(t, ppm[:10], "P3\n5 3\n255")
 }
