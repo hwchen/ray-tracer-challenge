@@ -2,6 +2,7 @@ package ray_tracer
 
 import "core:fmt"
 import "core:math"
+import "core:os"
 import "core:strings"
 import "core:testing"
 
@@ -49,6 +50,13 @@ canvas_to_ppm :: proc(c: Canvas) -> string {
     }
 
     return strings.to_string(buf)
+}
+
+canvas_to_file :: proc(c: Canvas, filepath: string) -> (success: bool) {
+    ppm := canvas_to_ppm(c)
+    defer delete(ppm)
+
+    return os.write_entire_file(filepath, transmute([]u8)ppm)
 }
 
 @(test)
