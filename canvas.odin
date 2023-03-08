@@ -27,6 +27,7 @@ pixel_at :: proc(c: Canvas, x: u32, y: u32) -> Tuple {
     return c.pixels[c.width * y + x]
 }
 
+// TODO handle breaking lines at 70 chars
 canvas_to_ppm :: proc(c: Canvas) -> string {
     // cap accounts for 4 chars for each pixel, plus header len
     buf := strings.builder_make_len_cap(0, int(c.width * c.height * 4 + 50))
@@ -43,7 +44,6 @@ canvas_to_ppm :: proc(c: Canvas) -> string {
 
         // each pixel set ends in space; for end of row (width), replace w/ \n
         if u32(idx + 1) % c.width == 0 {
-            fmt.printf("add rtrn at idx = %d\n", idx)
             buf.buf[len(buf.buf) - 1] = '\n'
         }
     }
@@ -105,4 +105,19 @@ test_ppm_pixels :: proc(t: ^testing.T) {
 `
 
     testing.expect_value(t, ppm[11:], expected)
+}
+
+@(test)
+test_ppm_terminated_by_newline :: proc(t: ^testing.T) {
+    c := canvas_init(5, 3)
+    defer canvas_destroy(c)
+
+    c1 := color(0, 0, 0)
+
+    write_pixel(c, 0, 0, c1)
+
+    ppm := canvas_to_ppm(c)
+    defer delete(ppm)
+
+    testing.expect_value(t, ppm[len(ppm) - 1], '\n')
 }
