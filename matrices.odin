@@ -141,3 +141,59 @@ test_matrix_inverse :: proc(t: ^testing.T) {
     m4 := m2 * m3
     expect_matrices_eq(t, m4 * inverse(m3), m2)
 }
+
+@(test)
+test_matrix_exploration :: proc(t: ^testing.T) {
+    // Invert identity matrix
+    {
+        expect_matrices_eq(t, inverse(identity()), identity())
+    }
+
+    // multiply matrix by inverse
+    {
+        m1 := matrix[4, 4]f32 {
+            -5, 2, 6, -8, 
+            1, -5, 1, 8, 
+            7, 7, -6, -7, 
+            1, -3, 7, 4, 
+        }
+        expect_matrices_eq(t, m1 * inverse(m1), identity())
+    }
+
+
+    // inverse of the transpose, vs. transpose of the inverse
+    {
+        m1 := matrix[4, 4]f32 {
+            -5, 2, 6, -8, 
+            1, -5, 1, 8, 
+            7, 7, -6, -7, 
+            1, -3, 7, 4, 
+        }
+        expect_matrices_eq(t, inverse(transpose(m1)), transpose(inverse(m1)))
+    }
+}
+
+@(test)
+test_matrix_identity_exploration :: proc(t: ^testing.T) {
+    // multiply an element by 2
+    {
+        m1 := matrix[4, 4]f32 {
+            1, 0, 0, 0, 
+            0, 2, 0, 0, 
+            0, 0, 1, 0, 
+            0, 0, 0, 1, 
+        }
+        expect_tuples_eq(t, m1 * Tuple{2, 2, 2, 2}, {2, 4, 2, 2})
+    }
+
+    // add multiple of another elem to elem
+    {
+        m1 := matrix[4, 4]f32 {
+            1, 2, 0, 0, 
+            0, 1, 0, 0, 
+            0, 0, 1, 0, 
+            0, 0, 0, 1, 
+        }
+        expect_tuples_eq(t, m1 * Tuple{2, 2, 2, 2}, {6, 2, 2, 2})
+    }
+}
