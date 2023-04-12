@@ -104,9 +104,9 @@ test_rotation_y_axis :: proc(t: ^testing.T) {
 
 @(test)
 test_rotation_z_axis :: proc(t: ^testing.T) {
-    p := point(1, 0, 0)
+    p := point(0, 1, 0)
     half_quarter := rotation_z(math.π / 4)
     full_quarter := rotation_z(math.π / 2)
-    expect_tuples_eq(t, half_quarter * p, point(math.sqrt_f32(2)/2, math.sqrt_f32(2)/2, 0))
-    expect_tuples_eq(t, full_quarter * p, point(0, 1, 0))
+    expect_tuples_eq(t, half_quarter * p, point(-math.sqrt_f32(2)/2, math.sqrt_f32(2)/2, 0))
+    expect_tuples_eq(t, full_quarter * p, point(-1, 0, 0))
 }
