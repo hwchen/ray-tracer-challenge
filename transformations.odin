@@ -110,3 +110,23 @@ test_rotation_z_axis :: proc(t: ^testing.T) {
     expect_tuples_eq(t, half_quarter * p, point(-math.sqrt_f32(2)/2, math.sqrt_f32(2)/2, 0))
     expect_tuples_eq(t, full_quarter * p, point(-1, 0, 0))
 }
+
+shear :: proc(xy: f32, xz: f32, yx: f32, yz: f32, zx: f32, zy: f32) -> matrix[4, 4]f32 {
+    return matrix[4, 4]f32 {
+        1, xy, xz, 0,
+        yx, 1, yz, 0,
+        zx, zy, 1, 0,
+        0, 0, 0, 1,
+    }
+}
+
+@(test)
+test_shear :: proc(t: ^testing.T) {
+    p := point(2, 3, 4)
+    expect_tuples_eq(t, shear(1, 0, 0, 0, 0, 0) * p, point(5, 3, 4))
+    expect_tuples_eq(t, shear(0, 1, 0, 0, 0, 0) * p, point(6, 3, 4))
+    expect_tuples_eq(t, shear(0, 0, 1, 0, 0, 0) * p, point(2, 5, 4))
+    expect_tuples_eq(t, shear(0, 0, 0, 1, 0, 0) * p, point(2, 7, 4))
+    expect_tuples_eq(t, shear(0, 0, 0, 0, 1, 0) * p, point(2, 3, 6))
+    expect_tuples_eq(t, shear(0, 0, 0, 0, 0, 1) * p, point(2, 3, 7))
+}
