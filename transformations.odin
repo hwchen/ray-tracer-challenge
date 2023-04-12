@@ -130,3 +130,20 @@ test_shear :: proc(t: ^testing.T) {
     expect_tuples_eq(t, shear(0, 0, 0, 0, 1, 0) * p, point(2, 3, 6))
     expect_tuples_eq(t, shear(0, 0, 0, 0, 0, 1) * p, point(2, 3, 7))
 }
+
+@(test)
+test_sequencing :: proc(t: ^testing.T) {
+    p := point(1, 0, 1)
+    A := rotation_x((math.π)/2)
+    B := scaling(5, 5, 5)
+    C := translation(10, 5, 7)
+
+    p2 := A * p
+    expect_tuples_eq(t, p2, point(1, -1, 0))
+    p3 := B * p2
+    expect_tuples_eq(t, p3, point(5, -5, 0))
+    p4 := C * p3
+    expect_tuples_eq(t, p4, point(15, 0, 7))
+
+    expect_tuples_eq(t, C * B * A * p, point(15, 0, 7))
+}
