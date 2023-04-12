@@ -4,7 +4,7 @@ import "core:fmt"
 import "core:math"
 import "core:testing"
 
-translation :: proc(x: f32 = 1, y: f32 = 1, z: f32 = 1) -> matrix[4, 4]f32 {
+translation :: proc(x: f32, y: f32, z: f32) -> matrix[4, 4]f32 {
     return matrix[4, 4]f32 {
         1, 0, 0, x,
         0, 1, 0, y,
@@ -27,7 +27,7 @@ test_translation_vector :: proc(t: ^testing.T) {
     expect_tuples_eq(t, translation(5, -3, 2) * v, v)
 }
 
-scaling :: proc(x: f32 = 1, y: f32 = 1, z: f32 = 1) -> matrix[4, 4]f32 {
+scaling :: proc(x: f32, y: f32, z: f32) -> matrix[4, 4]f32 {
     return matrix[4, 4]f32 {
         x, 0, 0, 0,
         0, y, 0, 0,
@@ -54,4 +54,59 @@ test_scaling_vector :: proc(t: ^testing.T) {
 test_reflection :: proc(t: ^testing.T) {
     p := point(2, 3, 4)
     expect_tuples_eq(t, scaling(-1, 1, 1) * p, point(-2, 3, 4))
+}
+
+rotation_x :: proc(r: f32) -> matrix[4, 4]f32 {
+    return matrix[4, 4]f32 {
+        1, 0, 0, 0,
+        0, math.cos(r), -math.sin(r), 0,
+        0, math.sin(r), math.cos(r), 0,
+        0, 0, 0, 1,
+    }
+}
+
+rotation_y :: proc(r: f32) -> matrix[4, 4]f32 {
+    return matrix[4, 4]f32 {
+        math.cos(r), 0, math.sin(r), 0,
+        0, 1, 0, 0,
+        -math.sin(r), 0, math.cos(r), 0,
+        0, 0, 0, 1,
+    }
+}
+
+rotation_z :: proc(r: f32) -> matrix[4, 4]f32 {
+    return matrix[4, 4]f32 {
+        math.cos(r), -math.sin(r), 0, 0,
+        math.sin(r), math.cos(r), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1,
+    }
+}
+
+@(test)
+test_rotation_x_axis :: proc(t: ^testing.T) {
+    p := point(0, 1, 0)
+    half_quarter := rotation_x(math.π / 4)
+    full_quarter := rotation_x(math.π / 2)
+    expect_tuples_eq(t, half_quarter * p, point(0, math.sqrt_f32(2)/2, math.sqrt_f32(2)/2))
+    expect_tuples_eq(t, full_quarter * p, point(0, 0, 1))
+    expect_tuples_eq(t, inverse(half_quarter) * p, point(0, math.sqrt_f32(2)/2, -math.sqrt_f32(2)/2))
+}
+
+@(test)
+test_rotation_y_axis :: proc(t: ^testing.T) {
+    p := point(0, 0, 1)
+    half_quarter := rotation_y(math.π / 4)
+    full_quarter := rotation_y(math.π / 2)
+    expect_tuples_eq(t, half_quarter * p, point(math.sqrt_f32(2)/2, 0, math.sqrt_f32(2)/2))
+    expect_tuples_eq(t, full_quarter * p, point(1, 0, 0))
+}
+
+@(test)
+test_rotation_z_axis :: proc(t: ^testing.T) {
+    p := point(1, 0, 0)
+    half_quarter := rotation_z(math.π / 4)
+    full_quarter := rotation_z(math.π / 2)
+    expect_tuples_eq(t, half_quarter * p, point(math.sqrt_f32(2)/2, math.sqrt_f32(2)/2, 0))
+    expect_tuples_eq(t, full_quarter * p, point(0, 1, 0))
 }
