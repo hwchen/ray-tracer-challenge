@@ -2,10 +2,15 @@ package ray_tracer
 
 import "core:bufio"
 import "core:fmt"
+import "core:log"
 import "core:os"
 
 main :: proc() {
+    context.logger = log.create_console_logger(.Info)
+
     opts := parse_opts()
+    log.infof("Scene: %v", opts.scene)
+    log.infof("Output path: %v", opts.out_path)
 
     c: Canvas
     switch opts.scene {
@@ -43,6 +48,8 @@ parse_opts :: proc() -> Opts {
                 opts.scene = .Projectile
             case "clock":
                 opts.scene = .Clock
+            case:
+
             }
             i += 2
         case:
