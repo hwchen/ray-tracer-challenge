@@ -5,8 +5,56 @@ import "core:fmt"
 import "core:os"
 
 main :: proc() {
-    c := canvas_init(900, 550)
+    opts := parse_opts()
+
+    c: Canvas
+    switch opts.scene {
+    case .Projectile:
+        c = scene_projectile()
+    case .Clock:
+        c = scene_clock()
+    }
     defer canvas_destroy(c)
+
+    canvas_to_file(c, opts.out_path)
+}
+
+Opts :: struct {
+    scene:    Scene,
+    out_path: string,
+}
+
+Scene :: enum {
+    Projectile,
+    Clock,
+}
+
+parse_opts :: proc() -> Opts {
+    opts: Opts
+
+    for i := 1; i < len(os.args); {
+        switch os.args[i] {
+        case "--out", "-o":
+            opts.out_path = os.args[i + 1]
+            i += 2
+        case "--scene", "-s":
+            switch os.args[i + 1] {
+            case "projectile":
+                opts.scene = .Projectile
+            case "clock":
+                opts.scene = .Clock
+            }
+            i += 2
+        case:
+            break
+        }
+    }
+
+    return opts
+}
+
+scene_projectile :: proc() -> Canvas {
+    c := canvas_init(900, 550)
 
     c1 := color(1, 0.8, 0.6)
 
@@ -23,5 +71,10 @@ main :: proc() {
         projectile += velocity
     }
 
-    canvas_to_file(c, "scratch/test.ppm")
+    return c
+}
+
+scene_clock :: proc() -> Canvas {
+    c := canvas_init(900, 550)
+    return c
 }

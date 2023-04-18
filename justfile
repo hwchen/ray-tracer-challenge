@@ -1,2 +1,2 @@
-scratch:
-    odin run . && feh scratch/test.ppm
+scratch scene:
+    odin run . -- --scene {{scene}} && feh scratch/test.ppm
