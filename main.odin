@@ -3,6 +3,7 @@ package ray_tracer
 import "core:bufio"
 import "core:fmt"
 import "core:log"
+import "core:math"
 import "core:os"
 
 main :: proc() {
@@ -82,6 +83,18 @@ scene_projectile :: proc() -> Canvas {
 }
 
 scene_clock :: proc() -> Canvas {
-    c := canvas_init(900, 550)
+    c := canvas_init(500, 500)
+
+    c1 := color(1, 0.8, 0.6)
+
+    hour := point(0, 200, 0)
+    rotate_hour := rotation_z(math.π / 6)
+
+    for _i in 0 ..< 12 {
+        hour = rotate_hour * hour
+        log.infof("Hour: %v", hour)
+        write_pixel(c, (c.width / 2) + u32(hour[0]), (c.height / 2) - u32(hour[1]), c1)
+    }
+
     return c
 }
