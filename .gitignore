@@ -1,4 +1,5 @@
 *.bin
+ray-tracer-challenge
 scratch
 .direnv
 .envrc
