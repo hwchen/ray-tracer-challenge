@@ -5,19 +5,28 @@ import "core:fmt"
 import "core:log"
 import "core:math"
 import "core:os"
+import "core:reflect"
+import "core:slice"
+import "core:strings"
 
 main :: proc() {
     context.logger = log.create_console_logger(.Info)
 
     opts := parse_opts()
+    if opts.list_scenes {
+        for scene in reflect.enum_field_names(Scene) {
+            fmt.println(scene)
+        }
+        return
+    }
     log.infof("Scene: %v", opts.scene)
     log.infof("Output path: %v", opts.out_path)
 
     c: Canvas
     switch opts.scene {
-    case .Projectile:
+    case .projectile:
         c = scene_projectile()
-    case .Clock:
+    case .clock:
         c = scene_clock()
     }
     defer canvas_destroy(c)
@@ -26,13 +35,14 @@ main :: proc() {
 }
 
 Opts :: struct {
-    scene:    Scene,
-    out_path: string,
+    list_scenes: bool,
+    scene:       Scene,
+    out_path:    string,
 }
 
 Scene :: enum {
-    Projectile,
-    Clock,
+    projectile,
+    clock,
 }
 
 parse_opts :: proc() -> Opts {
@@ -41,24 +51,35 @@ parse_opts :: proc() -> Opts {
     for i := 1; i < len(os.args); {
         switch os.args[i] {
         case "--out", "-o":
-            opts.out_path = os.args[i + 1]
+            opts.out_path = get_opt_arg(i + 1)
             i += 2
         case "--scene", "-s":
-            switch os.args[i + 1] {
-            case "projectile":
-                opts.scene = .Projectile
-            case "clock":
-                opts.scene = .Clock
-            case:
-
+            s := get_opt_arg(i + 1)
+            scene, eok := reflect.enum_from_name(Scene, strings.to_lower(s))
+            if eok {
+                opts.scene = scene
+            } else {
+                os.exit(1)
             }
             i += 2
+        case "--list-scenes", "-l":
+            opts.list_scenes = true
+            i += 1
         case:
             break
         }
     }
 
     return opts
+}
+
+get_opt_arg :: proc(args_idx: int) -> string {
+    arg, sok := slice.get(os.args, args_idx)
+    if !sok {
+        fmt.println("Flag missing argument")
+        os.exit(1)
+    }
+    return arg
 }
 
 scene_projectile :: proc() -> Canvas {
