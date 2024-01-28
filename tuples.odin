@@ -15,11 +15,19 @@ point :: proc(x: f32, y: f32, z: f32) -> Tuple {
     return {x, y, z, 1}
 }
 
+is_point :: proc(point: Tuple) -> bool {
+    return point[3] == 1
+}
+
 // A vector is a direction and magnitude in three-dimensional space.
 // It's represented as a tuple w/ last entry as 0, useful
 // for various calculations.
 vector :: proc(x: f32, y: f32, z: f32) -> Tuple {
     return {x, y, z, 0}
+}
+
+is_vector :: proc(v: Tuple) -> bool {
+    return v[3] == 0
 }
 
 // Returns the magnitude of a vector. Will return incorrect results if
