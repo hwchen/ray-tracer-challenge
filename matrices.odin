@@ -2,15 +2,19 @@ package ray_tracer
 
 import "core:fmt"
 import "core:math"
+import "core:math/linalg"
 import "core:testing"
 
+transpose :: linalg.transpose
+inverse :: linalg.inverse
+
 identity :: proc() -> matrix[4, 4]f32 {
-    return matrix[4, 4]f32 {
-            1, 0, 0, 0, 
-            0, 1, 0, 0, 
-            0, 0, 1, 0, 
-            0, 0, 0, 1, 
-        }
+    return matrix[4, 4]f32{
+        1, 0, 0, 0, 
+        0, 1, 0, 0, 
+        0, 0, 1, 0, 
+        0, 0, 0, 1, 
+    }
 }
 
 expect_matrices_eq :: proc(
@@ -36,21 +40,21 @@ expect_matrices_eq :: proc(
 
 @(test)
 test_matrix_multiplication :: proc(t: ^testing.T) {
-    m1 := matrix[4, 4]f32 {
+    m1 := matrix[4, 4]f32{
         1, 2, 3, 4, 
         5, 6, 7, 8, 
         9, 8, 7, 6, 
         5, 4, 3, 2, 
     }
 
-    m2 := matrix[4, 4]f32 {
+    m2 := matrix[4, 4]f32{
         -2, 1, 2, 3, 
         3, 2, 1, -1, 
         4, 3, 6, 5, 
         1, 2, 7, 8, 
     }
 
-    expected := matrix[4, 4]f32 {
+    expected := matrix[4, 4]f32{
         20, 22, 50, 48, 
         44, 54, 114, 108, 
         40, 58, 110, 102, 
@@ -62,7 +66,7 @@ test_matrix_multiplication :: proc(t: ^testing.T) {
 
 @(test)
 test_matrix_tuple_multiplication :: proc(t: ^testing.T) {
-    m1 := matrix[4, 4]f32 {
+    m1 := matrix[4, 4]f32{
         1, 2, 3, 4, 
         2, 4, 4, 2, 
         8, 6, 4, 1, 
@@ -78,7 +82,7 @@ test_matrix_tuple_multiplication :: proc(t: ^testing.T) {
 
 @(test)
 test_matrix_identity :: proc(t: ^testing.T) {
-    m1 := matrix[4, 4]f32 {
+    m1 := matrix[4, 4]f32{
         1, 2, 3, 4, 
         2, 4, 4, 2, 
         8, 6, 4, 1, 
@@ -90,14 +94,14 @@ test_matrix_identity :: proc(t: ^testing.T) {
 
 @(test)
 test_matrix_transpose :: proc(t: ^testing.T) {
-    m1 := matrix[4, 4]f32 {
+    m1 := matrix[4, 4]f32{
         1, 2, 3, 4, 
         2, 4, 4, 2, 
         8, 6, 4, 1, 
         0, 0, 0, 1, 
     }
 
-    expected := matrix[4, 4]f32 {
+    expected := matrix[4, 4]f32{
         1, 2, 8, 0, 
         2, 4, 6, 0, 
         3, 4, 4, 0, 
@@ -109,14 +113,14 @@ test_matrix_transpose :: proc(t: ^testing.T) {
 
 @(test)
 test_matrix_inverse :: proc(t: ^testing.T) {
-    m1 := matrix[4, 4]f32 {
+    m1 := matrix[4, 4]f32{
         -5, 2, 6, -8, 
         1, -5, 1, 8, 
         7, 7, -6, -7, 
         1, -3, 7, 4, 
     }
 
-    expected := matrix[4, 4]f32 {
+    expected := matrix[4, 4]f32{
         0.21805, 0.45113, 0.24060, -0.04511, 
         -0.80827, -1.45677, -0.44361, 0.52068, 
         -0.07895, -0.22368, -0.05263, 0.19737, 
@@ -125,13 +129,13 @@ test_matrix_inverse :: proc(t: ^testing.T) {
 
     expect_matrices_eq(t, inverse(m1), expected)
 
-    m2 := matrix[4, 4]f32 {
+    m2 := matrix[4, 4]f32{
         3, -9, 7, 3, 
         3, -8, 2, -9, 
         -4, 4, 4, 1, 
         -6, 5, -1, 1, 
     }
-    m3 := matrix[4, 4]f32 {
+    m3 := matrix[4, 4]f32{
         8, 2, 2, 2, 
         3, -1, 7, 0, 
         7, 0, 5, 4, 
@@ -151,7 +155,7 @@ test_matrix_exploration :: proc(t: ^testing.T) {
 
     // multiply matrix by inverse
     {
-        m1 := matrix[4, 4]f32 {
+        m1 := matrix[4, 4]f32{
             -5, 2, 6, -8, 
             1, -5, 1, 8, 
             7, 7, -6, -7, 
@@ -163,7 +167,7 @@ test_matrix_exploration :: proc(t: ^testing.T) {
 
     // inverse of the transpose, vs. transpose of the inverse
     {
-        m1 := matrix[4, 4]f32 {
+        m1 := matrix[4, 4]f32{
             -5, 2, 6, -8, 
             1, -5, 1, 8, 
             7, 7, -6, -7, 
@@ -177,7 +181,7 @@ test_matrix_exploration :: proc(t: ^testing.T) {
 test_matrix_identity_exploration :: proc(t: ^testing.T) {
     // multiply an element by 2
     {
-        m1 := matrix[4, 4]f32 {
+        m1 := matrix[4, 4]f32{
             1, 0, 0, 0, 
             0, 2, 0, 0, 
             0, 0, 1, 0, 
@@ -188,7 +192,7 @@ test_matrix_identity_exploration :: proc(t: ^testing.T) {
 
     // add multiple of another elem to elem
     {
-        m1 := matrix[4, 4]f32 {
+        m1 := matrix[4, 4]f32{
             1, 2, 0, 0, 
             0, 1, 0, 0, 
             0, 0, 1, 0, 
